@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitasoy 2026 — Event Recap Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#007A3D;
+    --green-dark:#00582F;
+    --yellow:#FFC72C;
+    --green-tint:#EAF5E7;
+    --ink:#1B2420;
+    --ink-soft:#5C6B62;
+    --line:#E2EAE3;
+    --card-bg:#FFFFFF;
+    --page-bg:#F6F9F6;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --shadow:0 1px 2px rgba(0,40,20,0.04), 0 8px 24px -16px rgba(0,40,20,0.18);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--page-bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding:32px 24px 80px;
+  }
+
+  .wrap{ max-width:1180px; margin:0 auto; }
+
+  /* ---------- HEADER ---------- */
+  .topbar{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:24px;
+    margin-bottom:28px;
+  }
+
+  .brand-block .eyebrow{
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--green);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+
+  .brand-block h1{
+    font-family:'Poppins',sans-serif;
+    font-size:28px;
+    font-weight:700;
+    color:var(--green-dark);
+    letter-spacing:-0.01em;
+  }
+
+  .brand-block p{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    max-width:480px;
+  }
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    padding:10px 16px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--green-dark);
+    cursor:pointer;
+    transition:border-color .15s, background .15s, transform .1s;
+  }
+  .btn:hover{ border-color:var(--green); background:var(--green-tint); }
+  .btn:active{ transform:scale(0.98); }
+  .btn.primary{
+    background:var(--green);
+    color:#fff;
+    border-color:var(--green);
+  }
+  .btn.primary:hover{ background:var(--green-dark); border-color:var(--green-dark); }
+
+  .btn svg{ width:15px; height:15px; flex-shrink:0; }
+  .btn .spin{ animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .last-sync{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    text-align:right;
+  }
+
+  /* ---------- SUMMARY STRIP ---------- */
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:14px;
+    margin-bottom:32px;
+  }
+
+  .stat{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:16px 18px;
+  }
+
+  .stat .label{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:500;
+    margin-bottom:8px;
+  }
+
+  .stat .value{
+    font-family:'Poppins',sans-serif;
+    font-size:24px;
+    font-weight:600;
+    color:var(--green-dark);
+  }
+
+  .stat .value.accent{ color:var(--green); }
+
+  /* ---------- MONTH / WEEK GROUPS ---------- */
+  .month-group{ margin-bottom:8px; }
+
+  .month-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 4px;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .month-header h2{
+    font-family:'Poppins',sans-serif;
+    font-size:18px;
+    font-weight:600;
+    color:var(--green-dark);
+  }
+
+  .month-header .count{
+    font-size:12px;
+    font-weight:600;
+    color:var(--green);
+    background:var(--green-tint);
+    padding:3px 10px;
+    border-radius:999px;
+  }
+
+  .month-header .chevron{
+    margin-left:auto;
+    width:18px; height:18px;
+    color:var(--ink-soft);
+    transition:transform .2s;
+    flex-shrink:0;
+  }
+
+  .month-header.collapsed .chevron{ transform:rotate(-90deg); }
+
+  .month-divider{
+    height:1px;
+    background:var(--line);
+    margin:0 4px 18px;
+  }
+
+  .month-body{ overflow:hidden; transition:max-height .25s ease; }
+  .month-body.collapsed{ max-height:0 !important; }
+
+  .week-group{ margin-bottom:28px; }
+
+  .week-label{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 4px 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .week-label::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+
+  /* ---------- CARD GRID ---------- */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+    gap:16px;
+  }
+
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    padding:18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    transition:transform .15s, box-shadow .15s;
+  }
+
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 4px 8px rgba(0,40,20,0.06), 0 16px 32px -18px rgba(0,40,20,0.28);
+  }
+
+  .card-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .card-head h3{
+    font-family:'Poppins',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.35;
+  }
+
+  .date-badge{
+    flex-shrink:0;
+    background:var(--green-tint);
+    color:var(--green-dark);
+    font-size:11px;
+    font-weight:700;
+    border-radius:8px;
+    padding:6px 9px;
+    text-align:center;
+    line-height:1.25;
+    min-width:48px;
+  }
+
+  .date-badge .num{ font-size:16px; display:block; font-family:'Poppins',sans-serif; }
+
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  .meta-row span{ display:flex; align-items:center; gap:5px; }
+  .meta-row svg{ width:14px; height:14px; flex-shrink:0; }
+
+  /* ---------- ACCEPTANCE RING + STATS ---------- */
+  .card-body{
+    display:flex;
+    gap:16px;
+    align-items:center;
+  }
+
+  .ring-wrap{
+    position:relative;
+    width:64px;
+    height:64px;
+    flex-shrink:0;
+  }
+
+  .ring-wrap svg{ transform:rotate(-90deg); }
+
+  .ring-track{ stroke:var(--green-tint); fill:none; stroke-width:6; }
+  .ring-fill{ stroke:var(--green); fill:none; stroke-width:6; stroke-linecap:round; }
+
+  .ring-label{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    line-height:1.1;
+  }
+
+  .ring-label .pct{ font-family:'Poppins',sans-serif; font-size:14px; font-weight:600; color:var(--green-dark); }
+  .ring-label .sub{ font-size:9px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+
+  .stat-mini-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px 16px;
+    flex:1;
+  }
+
+  .stat-mini .num{
+    font-family:'Poppins',sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .stat-mini .lbl{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:1px;
+  }
+
+  /* ---------- DETAIL SECTIONS ---------- */
+  .card-divider{ height:1px; background:var(--line); }
+
+  .detail{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  .detail strong{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--green);
+    margin-bottom:3px;
+  }
+
+  .tag-row{ display:flex; flex-wrap:wrap; gap:6px; }
+
+  .tag{
+    background:var(--green-tint);
+    color:var(--green-dark);
+    font-size:11px;
+    font-weight:600;
+    padding:4px 9px;
+    border-radius:999px;
+  }
+
+  .tag.yellow{ background:#FFF6DD; color:#8A6200; }
+
+  .card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:auto;
+  }
+
+  .photo-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--green);
+    text-decoration:none;
+  }
+  .photo-link svg{ width:14px; height:14px; }
+  .photo-link:hover{ color:var(--green-dark); text-decoration:underline; }
+
+  .weather-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+    font-weight:600;
+    color:#8A6200;
+    background:#FFF6DD;
+    padding:5px 10px;
+    border-radius:999px;
+  }
+  .weather-pill svg{ width:14px; height:14px; }
+
+  /* ---------- EMPTY / STATUS STATES ---------- */
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty-state svg{
+    width:40px; height:40px;
+    color:var(--green);
+    margin-bottom:14px;
+  }
+  .empty-state h3{
+    font-family:'Poppins',sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--green-dark);
+    margin-bottom:6px;
+  }
+  .empty-state p{ font-size:13px; max-width:320px; margin:0 auto; }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:11px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
+    margin-bottom:6px;
+  }
+  .status-pill.live{ background:var(--green-tint); color:var(--green-dark); }
+  .status-pill.sample{ background:#FFF6DD; color:#8A6200; }
+  .status-pill.error{ background:#FBEAEA; color:#A33D3D; }
+  .status-pill .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:currentColor;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .summary{ grid-template-columns:repeat(2, 1fr); }
+  }
+  @media (max-width:560px){
+    body{ padding:20px 14px 60px; }
+    .summary{ grid-template-columns:1fr 1fr; }
+    .topbar{ flex-direction:column; }
+    .last-sync{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand-block">
+      <div class="eyebrow">Vitasoy 2026 &middot; Field Activation Program</div>
+      <h1>Weekly event recap</h1>
+      <p>Live view of sampling activations &mdash; grouped by month and week, pulled directly from the team&rsquo;s shared tracker.</p>
+    </div>
+    <div style="text-align:right;">
+      <div id="statusPill" style="display:flex; justify-content:flex-end;"></div>
+      <div class="controls">
+        <button class="btn" id="refreshBtn" onclick="refreshData()">
+          <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh data
+        </button>
+        <button class="btn primary" id="openSheetBtn" onclick="openSheet()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Open source sheet
+        </button>
+      </div>
+      <div class="last-sync" id="lastSync">Loading data&hellip;</div>
+    </div>
+  </div>
+
+  <div class="summary" id="summaryStrip"></div>
+
+  <div id="groupsContainer"></div>
+
+</div>
+
+<script>
+// ---------------------------------------------------------------
+// CONFIG
+// API_URL  — your Apps Script Web App URL (doGet endpoint)
+// SHEET_URL — link to the Google Sheet itself, for the
+//             "Open source sheet" button
+// Leave API_URL blank to preview with sample data only.
+// ---------------------------------------------------------------
+const API_URL = "https://script.google.com/macros/s/AKfycbwmh_jvLYCcyVbzCv-S3SWTaJmzUP2e-1EWaHlp6uGpnDhqPrmXFJyNb0szFTydFMvi/exec";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/199r1VA0ojOko_YRDzWJlRY8LtNMlm56zZ3ltra75DyM/edit";
+
+let events = [];
+
+const sampleEvents = [
+  {
+    date:"2026-06-01", event:"VLT Lemon Tea Sampling — Riverside Market", location:"Riverside Farmers Market, 4th & Pine",
+    weather:"Sunny, 24°C", impressions:1450, engaged:310, samples:270, audience:"Health-conscious shoppers, 25-45",
+    bestSpot:"Market entrance, near produce stalls", faq:"Is it organic? Where can I buy locally?",
+    highlights:"Strong pull from the lemon flavor; several requests for multi-packs.", photo:"#"
+  },
+  {
+    date:"2026-06-03", event:"VLT Lemon Tea Sampling — Uptown Fitness Expo", location:"Uptown Convention Centre, Hall B",
+    weather:"Cloudy, 21°C", impressions:980, engaged:260, samples:240, audience:"Fitness enthusiasts, 18-35",
+    bestSpot:"Hydration station near main stage", faq:"Caffeine content? Calorie count per bottle?",
+    highlights:"Athletes responded well to the low-sugar messaging.", photo:"#"
+  },
+  {
+    date:"2026-06-05", event:"VLT Lemon Tea Sampling — Downtown Office Plaza", location:"Downtown Plaza, Tower 3 lobby",
+    weather:"Sunny, 26°C", impressions:1120, engaged:295, samples:255, audience:"Office workers, 25-50",
+    bestSpot:"Lobby foot traffic near elevators", faq:"Where is this sold nearby? Is it caffeinated?",
+    highlights:"Lunch-hour rush drove the highest single-hour engagement of the week.", photo:"#"
+  },
+  {
+    date:"2026-06-08", event:"VLT Lemon Tea Sampling — Lakeside Family Day", location:"Lakeside Community Park, North Pavilion",
+    weather:"Partly cloudy, 23°C", impressions:1760, engaged:430, samples:390, audience:"Families with children, 30-45",
+    bestSpot:"Pavilion entrance near kids' zone", faq:"Is it suitable for kids? Sugar content?",
+    highlights:"Families took multiple samples per household; positive feedback on taste.", photo:"#"
+  },
+  {
+    date:"2026-06-10", event:"VLT Lemon Tea Sampling — Tech Campus Wellness Day", location:"Innovate Tech Campus, Building C courtyard",
+    weather:"Sunny, 25°C", impressions:890, engaged:240, samples:215, audience:"Tech employees, 22-40",
+    bestSpot:"Courtyard near wellness booths", faq:"Is it vegan? Available in subscription boxes?",
+    highlights:"Strong interest in sustainability angle of packaging.", photo:"#"
+  },
+  {
+    date:"2026-06-12", event:"VLT Lemon Tea Sampling — University Quad", location:"State University, Main Quad",
+    weather:"Sunny, 27°C", impressions:2010, engaged:520, samples:470, audience:"University students, 18-24",
+    bestSpot:"Quad entrance near library steps", faq:"Student discounts? Where to buy on campus?",
+    highlights:"Highest sample acceptance of the month; strong social media buzz.", photo:"#"
+  },
+  {
+    date:"2026-06-15", event:"VLT Lemon Tea Sampling — Harborview Night Market", location:"Harborview Pier, Stall Row B",
+    weather:"Clear, 22°C", impressions:1340, engaged:355, samples:300, audience:"Mixed adults, evening crowd, 25-55",
+    bestSpot:"Stall row near food vendors", faq:"Is it refrigerated before purchase? Shelf life?",
+    highlights:"Evening crowd skewed toward repeat tasters returning for seconds.", photo:"#"
+  },
+  {
+    date:"2026-06-17", event:"VLT Lemon Tea Sampling — Westside Grocery Demo", location:"Westside Grocery Co-op, front entrance",
+    weather:"Overcast, 20°C", impressions:760, engaged:205, samples:190, audience:"Grocery shoppers, 30-60",
+    bestSpot:"Front entrance near shopping carts", faq:"Price point vs. competitors? In-store discount available?",
+    highlights:"Several shoppers added the product to cart immediately after sampling.", photo:"#"
+  },
+  {
+    date:"2026-06-19", event:"VLT Lemon Tea Sampling — Riverside Run Club", location:"Riverside Trailhead, finish line area",
+    weather:"Sunny, 24°C", impressions:640, engaged:190, samples:175, audience:"Runners and joggers, 20-45",
+    bestSpot:"Finish line, post-run recovery zone", faq:"Electrolyte content? Best post-workout drink?",
+    highlights:"Positioned well as a post-run recovery option; high repeat interest.", photo:"#"
+  },
+  {
+    date:"2026-06-22", event:"VLT Lemon Tea Sampling — Sunday Cultural Festival", location:"Heritage Square, festival grounds",
+    weather:"Sunny, 26°C", impressions:2240, engaged:560, samples:480, audience:"General public, all ages",
+    bestSpot:"Main stage area near seating", faq:"Available in other flavors? Bulk order for events?",
+    highlights:"Largest single-day reach of the program so far; strong family turnout.", photo:"#"
+  }
+];
+
+function fmt(n){ return n.toLocaleString(); }
+function pct(a,b){ return Math.round((a/b)*100); }
+function weekOfMonth(d){
+  const date = new Date(d);
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  return Math.ceil((date.getDate() + firstDay) / 7);
+}
+function monthLabel(d){
+  return new Date(d).toLocaleDateString('en-US', { month:'long', year:'numeric' });
+}
+function dayParts(d){
+  const date = new Date(d);
+  return {
+    num: date.getDate(),
+    mon: date.toLocaleDateString('en-US', { month:'short' })
+  };
+}
+
+function buildSummary(){
+  if(events.length === 0){
+    document.getElementById('summaryStrip').innerHTML = '';
+    return;
+  }
+
+  const totalImpressions = events.reduce((s,e)=>s+e.impressions,0);
+  const totalEngaged = events.reduce((s,e)=>s+e.engaged,0);
+  const totalSamples = events.reduce((s,e)=>s+e.samples,0);
+  const avgRate = Math.round(events.reduce((s,e)=>{
+    const r = (typeof e.acceptanceRate === 'number') ? e.acceptanceRate : pct(e.samples, e.engaged);
+    return s + r;
+  },0)/events.length);
+
+  const stats = [
+    { label:"Total events", value: fmt(events.length), accent:true },
+    { label:"Total impressions", value: fmt(totalImpressions) },
+    { label:"Consumers engaged", value: fmt(totalEngaged) },
+    { label:"Samples distributed", value: fmt(totalSamples) },
+    { label:"Avg. acceptance rate", value: avgRate + "%", accent:true }
+  ];
+
+  document.getElementById('summaryStrip').innerHTML = stats.map(s => `
+    <div class="stat">
+      <div class="label">${s.label}</div>
+      <div class="value ${s.accent ? 'accent':''}">${s.value}</div>
+    </div>
+  `).join('');
+}
+
+function buildGroups(){
+  const container = document.getElementById('groupsContainer');
+  container.innerHTML = '';
+
+  if(events.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+        <h3>No events yet</h3>
+        <p>Once the team logs events in the Weekly Event Recap sheet, they will appear here automatically.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const groups = {};
+  events.forEach(e => {
+    const m = monthLabel(e.date);
+    const w = "Week " + weekOfMonth(e.date);
+    groups[m] = groups[m] || {};
+    groups[m][w] = groups[m][w] || [];
+    groups[m][w].push(e);
+  });
+
+  Object.keys(groups).forEach((month, idx) => {
+    const weeks = groups[month];
+    const totalCount = Object.values(weeks).reduce((s,arr)=>s+arr.length,0);
+
+    const monthDiv = document.createElement('div');
+    monthDiv.className = 'month-group';
+
+    const header = document.createElement('div');
+    header.className = 'month-header';
+    header.innerHTML = `
+      <h2>${month}</h2>
+      <span class="count">${totalCount} event${totalCount===1?'':'s'}</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    `;
+
+    const divider = document.createElement('div');
+    divider.className = 'month-divider';
+
+    const body = document.createElement('div');
+    body.className = 'month-body';
+
+    Object.keys(weeks).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true})).forEach(weekKey => {
+      const weekDiv = document.createElement('div');
+      weekDiv.className = 'week-group';
+
+      const label = document.createElement('div');
+      label.className = 'week-label';
+      label.textContent = weekKey;
+
+      const grid = document.createElement('div');
+      grid.className = 'card-grid';
+      grid.innerHTML = weeks[weekKey].map(buildCard).join('');
+
+      weekDiv.appendChild(label);
+      weekDiv.appendChild(grid);
+      body.appendChild(weekDiv);
+    });
+
+    header.addEventListener('click', () => {
+      header.classList.toggle('collapsed');
+      body.classList.toggle('collapsed');
+      if(body.classList.contains('collapsed')){
+        body.style.maxHeight = '0px';
+      } else {
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+
+    monthDiv.appendChild(header);
+    monthDiv.appendChild(divider);
+    monthDiv.appendChild(body);
+    container.appendChild(monthDiv);
+
+    requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+  });
+}
+
+function buildCard(e){
+  const d = dayParts(e.date);
+  const rate = (typeof e.acceptanceRate === 'number') ? e.acceptanceRate : pct(e.samples, e.engaged);
+  const r = 26;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference - (rate/100) * circumference;
+
+  return `
+    <div class="card">
+      <div class="card-head">
+        <h3>${e.event}</h3>
+        <div class="date-badge"><span class="num">${d.num}</span>${d.mon}</div>
+      </div>
+
+      <div class="meta-row">
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${e.location}
+        </span>
+        <span class="weather-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          ${e.weather}
+        </span>
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div class="card-body">
+        <div class="ring-wrap">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle class="ring-track" cx="32" cy="32" r="${r}"></circle>
+            <circle class="ring-fill" cx="32" cy="32" r="${r}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+          </svg>
+          <div class="ring-label">
+            <span class="pct">${rate}%</span>
+            <span class="sub">accepted</span>
+          </div>
+        </div>
+        <div class="stat-mini-grid">
+          <div class="stat-mini"><div class="num">${fmt(e.impressions)}</div><div class="lbl">Impressions</div></div>
+          <div class="stat-mini"><div class="num">${fmt(e.engaged)}</div><div class="lbl">Consumers engaged</div></div>
+          <div class="stat-mini"><div class="num">${fmt(e.samples)}</div><div class="lbl">Samples distributed</div></div>
+          <div class="stat-mini"><div class="num">${e.audience.split(',')[1] ? e.audience.split(',')[1].trim() : '—'}</div><div class="lbl">Age range</div></div>
+        </div>
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div class="detail">
+        <strong>Target audience</strong>
+        ${e.audience}
+      </div>
+
+      <div class="detail">
+        <strong>Most effective location</strong>
+        ${e.bestSpot}
+      </div>
+
+      <div class="detail">
+        <strong>FAQ from consumers</strong>
+        ${e.faq}
+      </div>
+
+      <div class="detail">
+        <strong>Notable highlights &amp; feedback</strong>
+        ${e.highlights}
+      </div>
+
+      <div class="card-foot">
+        <a class="photo-link" href="${e.photo}" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          View photos
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+function setStatus(type, label){
+  const pill = document.getElementById('statusPill');
+  const dotIcon = '<span class="dot"></span>';
+  pill.innerHTML = `<span class="status-pill ${type}">${dotIcon}${label}</span>`;
+}
+
+function timeNow(){
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function openSheet(){
+  if(SHEET_URL){
+    window.open(SHEET_URL, '_blank');
+  } else {
+    alert('Add your Google Sheet link to SHEET_URL near the top of the script.');
+  }
+}
+
+async function loadData(isManualRefresh){
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  const lastSync = document.getElementById('lastSync');
+
+  if(isManualRefresh){
+    icon.classList.add('spin');
+    btn.disabled = true;
+  }
+
+  if(!API_URL){
+    events = sampleEvents;
+    setStatus('sample', 'Sample data — connect API_URL for live sync');
+    lastSync.textContent = "Preview mode";
+    buildSummary();
+    buildGroups();
+    if(isManualRefresh){
+      icon.classList.remove('spin');
+      btn.disabled = false;
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, { cache: 'no-store' });
+    if(!res.ok) throw new Error('Request failed (' + res.status + ')');
+    const data = await res.json();
+
+    if(data.error) throw new Error(data.error);
+
+    events = (data.events || []).map(e => {
+      if(e.acceptanceRate === null || e.acceptanceRate === undefined){
+        e.acceptanceRate = e.engaged ? Math.round((e.samples / e.engaged) * 100) : 0;
+      }
+      return e;
+    });
+
+    setStatus('live', 'Live — connected to Google Sheets');
+    lastSync.textContent = "Last refreshed at " + timeNow();
+
+  } catch (err) {
+    if(events.length === 0){
+      events = sampleEvents;
+    }
+    setStatus('error', 'Could not reach the sheet — showing last known data');
+    lastSync.textContent = "Last attempted at " + timeNow();
+    console.error('Dashboard data load failed:', err);
+  }
+
+  buildSummary();
+  buildGroups();
+
+  if(isManualRefresh){
+    icon.classList.remove('spin');
+    btn.disabled = false;
+  }
+}
+
+function refreshData(){
+  loadData(true);
+}
+
+loadData(false);
+
+</script>
+</body>
+</html>
