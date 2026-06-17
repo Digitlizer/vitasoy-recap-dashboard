@@ -113,7 +113,7 @@
   /* ---------- SUMMARY STRIP ---------- */
   .summary{
     display:grid;
-    grid-template-columns:repeat(5, 1fr);
+    grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
     gap:14px;
     margin-bottom:32px;
   }
@@ -356,25 +356,6 @@
 
   .tag.yellow{ background:#FFF6DD; color:#8A6200; }
 
-  .card-foot{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:auto;
-  }
-
-  .photo-link{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:12.5px;
-    font-weight:600;
-    color:var(--green);
-    text-decoration:none;
-  }
-  .photo-link svg{ width:14px; height:14px; }
-  .photo-link:hover{ color:var(--green-dark); text-decoration:underline; }
-
   .weather-pill{
     display:inline-flex;
     align-items:center;
@@ -485,63 +466,63 @@ let events = [];
 const sampleEvents = [
   {
     date:"2026-06-01", event:"VLT Lemon Tea Sampling — Riverside Market", location:"Riverside Farmers Market, 4th & Pine",
-    weather:"Sunny, 24°C", impressions:1450, engaged:310, samples:270, audience:"Health-conscious shoppers, 25-45",
+    weather:"Sunny, 24°C", impressions:1450, engaged:310, samples:270, staffHours:6, audience:"Health-conscious shoppers, 25-45",
     bestSpot:"Market entrance, near produce stalls", faq:"Is it organic? Where can I buy locally?",
-    highlights:"Strong pull from the lemon flavor; several requests for multi-packs.", photo:"#"
+    highlights:"Strong pull from the lemon flavor; several requests for multi-packs."
   },
   {
     date:"2026-06-03", event:"VLT Lemon Tea Sampling — Uptown Fitness Expo", location:"Uptown Convention Centre, Hall B",
-    weather:"Cloudy, 21°C", impressions:980, engaged:260, samples:240, audience:"Fitness enthusiasts, 18-35",
+    weather:"Cloudy, 21°C", impressions:980, engaged:260, samples:240, staffHours:4, audience:"Fitness enthusiasts, 18-35",
     bestSpot:"Hydration station near main stage", faq:"Caffeine content? Calorie count per bottle?",
-    highlights:"Athletes responded well to the low-sugar messaging.", photo:"#"
+    highlights:"Athletes responded well to the low-sugar messaging."
   },
   {
     date:"2026-06-05", event:"VLT Lemon Tea Sampling — Downtown Office Plaza", location:"Downtown Plaza, Tower 3 lobby",
-    weather:"Sunny, 26°C", impressions:1120, engaged:295, samples:255, audience:"Office workers, 25-50",
+    weather:"Sunny, 26°C", impressions:1120, engaged:295, samples:255, staffHours:5, audience:"Office workers, 25-50",
     bestSpot:"Lobby foot traffic near elevators", faq:"Where is this sold nearby? Is it caffeinated?",
-    highlights:"Lunch-hour rush drove the highest single-hour engagement of the week.", photo:"#"
+    highlights:"Lunch-hour rush drove the highest single-hour engagement of the week."
   },
   {
     date:"2026-06-08", event:"VLT Lemon Tea Sampling — Lakeside Family Day", location:"Lakeside Community Park, North Pavilion",
-    weather:"Partly cloudy, 23°C", impressions:1760, engaged:430, samples:390, audience:"Families with children, 30-45",
+    weather:"Partly cloudy, 23°C", impressions:1760, engaged:430, samples:390, staffHours:8, audience:"Families with children, 30-45",
     bestSpot:"Pavilion entrance near kids' zone", faq:"Is it suitable for kids? Sugar content?",
-    highlights:"Families took multiple samples per household; positive feedback on taste.", photo:"#"
+    highlights:"Families took multiple samples per household; positive feedback on taste."
   },
   {
     date:"2026-06-10", event:"VLT Lemon Tea Sampling — Tech Campus Wellness Day", location:"Innovate Tech Campus, Building C courtyard",
-    weather:"Sunny, 25°C", impressions:890, engaged:240, samples:215, audience:"Tech employees, 22-40",
+    weather:"Sunny, 25°C", impressions:890, engaged:240, samples:215, staffHours:4, audience:"Tech employees, 22-40",
     bestSpot:"Courtyard near wellness booths", faq:"Is it vegan? Available in subscription boxes?",
-    highlights:"Strong interest in sustainability angle of packaging.", photo:"#"
+    highlights:"Strong interest in sustainability angle of packaging."
   },
   {
     date:"2026-06-12", event:"VLT Lemon Tea Sampling — University Quad", location:"State University, Main Quad",
-    weather:"Sunny, 27°C", impressions:2010, engaged:520, samples:470, audience:"University students, 18-24",
+    weather:"Sunny, 27°C", impressions:2010, engaged:520, samples:470, staffHours:7, audience:"University students, 18-24",
     bestSpot:"Quad entrance near library steps", faq:"Student discounts? Where to buy on campus?",
-    highlights:"Highest sample acceptance of the month; strong social media buzz.", photo:"#"
+    highlights:"Highest sample acceptance of the month; strong social media buzz."
   },
   {
     date:"2026-06-15", event:"VLT Lemon Tea Sampling — Harborview Night Market", location:"Harborview Pier, Stall Row B",
-    weather:"Clear, 22°C", impressions:1340, engaged:355, samples:300, audience:"Mixed adults, evening crowd, 25-55",
+    weather:"Clear, 22°C", impressions:1340, engaged:355, samples:300, staffHours:6, audience:"Mixed adults, evening crowd, 25-55",
     bestSpot:"Stall row near food vendors", faq:"Is it refrigerated before purchase? Shelf life?",
-    highlights:"Evening crowd skewed toward repeat tasters returning for seconds.", photo:"#"
+    highlights:"Evening crowd skewed toward repeat tasters returning for seconds."
   },
   {
     date:"2026-06-17", event:"VLT Lemon Tea Sampling — Westside Grocery Demo", location:"Westside Grocery Co-op, front entrance",
-    weather:"Overcast, 20°C", impressions:760, engaged:205, samples:190, audience:"Grocery shoppers, 30-60",
+    weather:"Overcast, 20°C", impressions:760, engaged:205, samples:190, staffHours:5, audience:"Grocery shoppers, 30-60",
     bestSpot:"Front entrance near shopping carts", faq:"Price point vs. competitors? In-store discount available?",
-    highlights:"Several shoppers added the product to cart immediately after sampling.", photo:"#"
+    highlights:"Several shoppers added the product to cart immediately after sampling."
   },
   {
     date:"2026-06-19", event:"VLT Lemon Tea Sampling — Riverside Run Club", location:"Riverside Trailhead, finish line area",
-    weather:"Sunny, 24°C", impressions:640, engaged:190, samples:175, audience:"Runners and joggers, 20-45",
+    weather:"Sunny, 24°C", impressions:640, engaged:190, samples:175, staffHours:3, audience:"Runners and joggers, 20-45",
     bestSpot:"Finish line, post-run recovery zone", faq:"Electrolyte content? Best post-workout drink?",
-    highlights:"Positioned well as a post-run recovery option; high repeat interest.", photo:"#"
+    highlights:"Positioned well as a post-run recovery option; high repeat interest."
   },
   {
     date:"2026-06-22", event:"VLT Lemon Tea Sampling — Sunday Cultural Festival", location:"Heritage Square, festival grounds",
-    weather:"Sunny, 26°C", impressions:2240, engaged:560, samples:480, audience:"General public, all ages",
+    weather:"Sunny, 26°C", impressions:2240, engaged:560, samples:480, staffHours:9, audience:"General public, all ages",
     bestSpot:"Main stage area near seating", faq:"Available in other flavors? Bulk order for events?",
-    highlights:"Largest single-day reach of the program so far; strong family turnout.", photo:"#"
+    highlights:"Largest single-day reach of the program so far; strong family turnout."
   }
 ];
 
@@ -572,6 +553,7 @@ function buildSummary(){
   const totalImpressions = events.reduce((s,e)=>s+e.impressions,0);
   const totalEngaged = events.reduce((s,e)=>s+e.engaged,0);
   const totalSamples = events.reduce((s,e)=>s+e.samples,0);
+  const totalStaffHours = events.reduce((s,e)=>s+(e.staffHours||0),0);
   const avgRate = Math.round(events.reduce((s,e)=>{
     const r = (typeof e.acceptanceRate === 'number') ? e.acceptanceRate : pct(e.samples, e.engaged);
     return s + r;
@@ -582,6 +564,7 @@ function buildSummary(){
     { label:"Total impressions", value: fmt(totalImpressions) },
     { label:"Consumers engaged", value: fmt(totalEngaged) },
     { label:"Samples distributed", value: fmt(totalSamples) },
+    { label:"Staff hours logged", value: fmt(totalStaffHours) },
     { label:"Avg. acceptance rate", value: avgRate + "%", accent:true }
   ];
 
@@ -716,7 +699,7 @@ function buildCard(e){
           <div class="stat-mini"><div class="num">${fmt(e.impressions)}</div><div class="lbl">Impressions</div></div>
           <div class="stat-mini"><div class="num">${fmt(e.engaged)}</div><div class="lbl">Consumers engaged</div></div>
           <div class="stat-mini"><div class="num">${fmt(e.samples)}</div><div class="lbl">Samples distributed</div></div>
-          <div class="stat-mini"><div class="num">${e.audience.split(',')[1] ? e.audience.split(',')[1].trim() : '—'}</div><div class="lbl">Age range</div></div>
+          <div class="stat-mini"><div class="num">${e.staffHours != null ? e.staffHours : '—'}</div><div class="lbl">Staff hours</div></div>
         </div>
       </div>
 
@@ -740,13 +723,6 @@ function buildCard(e){
       <div class="detail">
         <strong>Notable highlights &amp; feedback</strong>
         ${e.highlights}
-      </div>
-
-      <div class="card-foot">
-        <a class="photo-link" href="${e.photo}" target="_blank">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          View photos
-        </a>
       </div>
     </div>
   `;
